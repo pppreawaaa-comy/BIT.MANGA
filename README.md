@@ -88,3 +88,14 @@ docker compose -p bitmanga-prod -f docker-compose.yaml -f docker-compose.product
 ```
 
 Set `PUBLIC_DOMAIN`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `JWT_SECRET`, and `SEED_ADMIN_PASSWORD` before running the command. Caddy obtains and renews the HTTPS certificate; only ports 80 and 443 are published in this configuration. The production project name keeps its PostgreSQL volume separate from the local development database.
+
+## Live Website
+
+**Website:** https://bit-manga.vercel.app/
+
+**Deployment Status:** Live (Production)
+
+- Frontend: Next.js on Vercel
+- Backend: FastAPI on Render
+- Database: PostgreSQL on Render
+- Admin Analytics: Under verification
