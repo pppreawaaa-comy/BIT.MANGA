@@ -11,6 +11,10 @@
 
 A responsive manga reading app built on the supplied ACP boilerplate: Next.js Pages Router, shadcn-style UI components, FastAPI, PostgreSQL, bcrypt password hashes, and JWT authentication.
 
+## Live URLs
+
+- Website: https://bit-manga.vercel.app
+
 ## Run locally
 
 1. Open this repository in VS Code. On Windows, the workspace selects Git Bash as its integrated terminal so the Bash launcher works. If a PowerShell terminal is already open, close it and create a new terminal after opening the repository. Git for Windows (which includes Git Bash) and Docker Desktop must be installed. If Docker Desktop is installed in its standard location but not running, the launcher will start it and wait for the engine.
@@ -75,7 +79,7 @@ All application routes are under `/api`. Login and registration return a signed 
 - `POST /api/checkout/mock`, `GET /api/users/me`
 - `GET /api/admin/metrics` (Admin only)
 
-The PostgreSQL table definitions, schema upgrades, and transferable catalog entries are in [`backend-api/schema.sql`](backend-api/schema.sql). On startup, the API applies that file, upgrades the starter's original users table in place, seeds the demonstration catalog, and refreshes the SQL catalog snapshot. Admin changes to series and chapters (create, edit, or delete) also refresh that snapshot in the same file. The snapshot contains catalog data only, not users, passwords, bookmarks, or transactions. Commit and push the modified SQL file to share the catalog with another checkout; GitHub is not updated automatically. SQL inserts are repeat-safe, and existing catalog edits are reflected in the snapshot. Password hashes use bcrypt. The checkout is simulated and records a successful transaction and 30-day subscription; it does not collect payment details.
+The PostgreSQL table definitions, schema upgrades, and initial catalog entries are in [`backend-api/schema.sql`](backend-api/schema.sql). On startup, the API upgrades the starter's original users table and seeds the catalog only once for a new, empty database. Existing databases are marked as initialized without replaying the seed, so later restarts cannot restore old manga details or bring back deleted seed entries. Admin changes to series and chapters (create, edit, or delete) also refresh a catalog-only SQL snapshot in that file; users, passwords, bookmarks, and transactions are not included. Commit and push the modified SQL file to include that catalog as the initial data for a new checkout; it does not overwrite manga already present in an initialized database, and GitHub is not updated automatically. Password hashes use bcrypt. The checkout is simulated and records a successful transaction and 30-day subscription; it does not collect payment details.
 
 ## Data and deployment notes
 

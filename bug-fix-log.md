@@ -2,6 +2,36 @@
 
 > **Copilot instruction:** When diagnosing a recurring or new bug in BIT.MANGA, read this log before changing code. Compare the symptoms with earlier entries and check the relevant app/container logs. After fixing a new bug, append a dated entry with its symptoms, root cause, exact remediation, and verification. Preserve older entries, do not include secrets, and never recommend deleting the PostgreSQL volume as a routine fix.
 
+## 2026-10-29 — Catalog changes reverted after API restart
+
+**Symptoms**
+
+- Manga catalog entries reverted to older descriptions, chapter content, or other seeded values after a restart.
+- The issue affected manga data rather than user accounts or other database records.
+
+**Cause and fix**
+
+The API reapplied the catalog seed from `schema.sql` at every startup, and conflicting series and chapter rows were overwritten with the seed values. Added a one-time catalog seed marker. A new empty database receives the initial catalog once; an existing database is marked initialized without replaying it. Seed conflicts are non-destructive, and later restarts no longer recreate deleted seed entries.
+
+**Verification**
+
+Initialized an isolated PostgreSQL database, edited a seeded manga, deleted another, and ran setup a second time. The edit remained and the deleted manga stayed deleted. The running API also returned HTTP 200 after reloading the updated code.
+
+## 2026-10-29 — Codespaces API could not connect to PostgreSQL
+
+**Symptoms**
+
+- Login failed because the API process exited during application startup.
+- Port 8000 reset connections, while the frontend remained available and PostgreSQL was healthy on port 5555.
+
+**Cause and fix**
+
+The Codespaces override routed the API to `host.docker.internal`, but omitted the host-published PostgreSQL port. The database listens on container port 5432 and is published on host port 5555, so the API was trying the closed host port 5432. The override now sets `POSTGRES_HOST` to `host.docker.internal:5555`.
+
+**Verification**
+
+Recreated only the API container, preserving the database container and volume. The API root and direct login returned HTTP 200; login through the frontend proxy also returned HTTP 200. PostgreSQL remained reachable on port 5555.
+
 ## 2026-10-20 — Windows launcher did not start Docker Desktop
 
 **Symptoms**
